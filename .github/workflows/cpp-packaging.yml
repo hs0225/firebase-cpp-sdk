@@ -401,11 +401,23 @@ jobs:
         with:
           python-version: ${{ matrix.python_version }}
 
+      - name: Set up Node (16)
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - name: Setup DNS flusher
+        shell: bash
+        command: |
+          npm i flush-dns -g
+
       - name: Install Desktop SDK prerequisites
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 15
           max_attempts: 3
+          retry_wait_seconds: 60
+          on_retry_command: |
+            flush-dns
           command: |
             python scripts/gha/install_prereqs_desktop.py --gha_build --arch '${{ matrix.architecture }}' --ssl boringssl
 
