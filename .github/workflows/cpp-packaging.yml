@@ -407,7 +407,7 @@ jobs:
           node-version: 16.x
       - name: Setup DNS flusher
         shell: bash
-        command: |
+        run: |
           npm i flush-dns -g
 
       - name: Install Desktop SDK prerequisites
