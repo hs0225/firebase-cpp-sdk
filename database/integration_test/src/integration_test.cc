@@ -27,6 +27,7 @@
 #include "firebase/auth.h"
 #include "firebase/database.h"
 #include "firebase/internal/platform.h"
+#include "firebase/log.h"
 #include "firebase/util.h"
 #include "firebase_test_framework.h"  // NOLINT
 
@@ -210,6 +211,7 @@ void FirebaseDatabaseTest::InitializeAppAndAuth() {
       << initializer.InitializeLastResult().error_message();
 
   LogDebug("Successfully initialized Auth.");
+  firebase::SetLogLevel(firebase::kLogLevelVerbose);
 
   ASSERT_NE(shared_auth_, nullptr);
 
@@ -253,7 +255,7 @@ void FirebaseDatabaseTest::TearDown() {
   // Delete the shared path, if there is one.
   if (initialized_) {
     if (!cleanup_paths_.empty() && database_ && shared_app_) {
-      LogDebug("Cleaning up...");
+      LogDebug("Cleaning up... %d", cleanup_paths_.size());
       std::vector<firebase::Future<void>> cleanups;
       cleanups.reserve(cleanup_paths_.size());
       for (int i = 0; i < cleanup_paths_.size(); ++i) {
