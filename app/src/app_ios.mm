@@ -91,7 +91,9 @@ static void PlatformOptionsToAppOptions(FIROptions* platform_options, AppOptions
 
 // Copy AppOptions into a FIROptions instance.
 static FIROptions* AppOptionsToPlatformOptions(const AppOptions& app_options) {
+  LogError("DEDB AppOptionsToPlatformOptions");
   FIROptions* platform_options = [[FIROptions alloc] initWithGoogleAppID:@"" GCMSenderID:@""];
+  LogError("DEDB FIROptions: %p", platform_options);
   if (strlen(app_options.app_id())) {
     platform_options.googleAppID = @(app_options.app_id());
   }
@@ -119,6 +121,7 @@ static FIROptions* AppOptionsToPlatformOptions(const AppOptions& app_options) {
   if (strlen(app_options.client_id())) {
     platform_options.clientID = @(app_options.client_id());
   }
+  LogError("DEDB returning platform_options: %p", platform_options);
   return platform_options;
 }
 
@@ -139,26 +142,39 @@ static FIRLoggerLevel g_delayed_fir_configuration_logger_level = FIRLoggerLevelW
 
 // Create an iOS FIRApp instance.
 static FIRApp* CreatePlatformApp(const AppOptions& options, const char* name) {
+  LogError("DEDB CreatePlatformApp");
   __block FIRApp* platform_app = nil;
   AppOptions options_with_defaults = options;
   if (options_with_defaults.PopulateRequiredWithDefaults()) {
+    LogError("DEDB CreatePlatformApp PopulateRequiredWithDefaults returned true");
     FIROptions* platform_options = AppOptionsToPlatformOptions(options_with_defaults);
+    LogError("DEDB CreatePlatformApp platform_options: %p", platform_options);
     // FIRApp will fail configuration if the bundle ID isn't set so fallback
     // to the main bundle ID.
     if (!platform_options.bundleID.length) {
+      LogError("DEDB CreatePlatformApp bundle id was empty");
       platform_options.bundleID = [[NSBundle mainBundle] bundleIdentifier];
     }
     if (platform_options) {
+      LogError("DEDB CreatePlatformApp creating configure app closure");
       // TODO: Re-evaluate this workaround
       // Workaround: App configuration needs to run from the main thread.
       void (^closure)(void) = ^{
+        LogError("DEDB CreatePlatformApp inside closure");
         @try {
+          LogError("DEDB CreatePlatformApp inside try");
           if (app_common::IsDefaultAppName(name)) {
+            LogError("DEDB CreatePlatformApp configure default app with options");
             [FIRApp configureWithOptions:platform_options];
+            LogError("DEDB CreatePlatformApp configureWithOptions returned");
           } else {
+            LogError("DEDB CreatePlatformApp configure named app with options");
             [FIRApp configureWithName:@(name) options:platform_options];
+            LogError("DEDB CreatePlatformApp configure named app with options returned");
           }
+          LogError("DEDB CreatePlatformApp calling GetPlatformAppByName");
           platform_app = GetPlatformAppByName(name);
+          LogError("DEDB CreatePlatformApp GetPlatformAppByName returned: %p", platform_app);
           // If the logger level was cached due to logging happening prior to
           // App's initialization, apply the delayed setting now, when FIRApp
           // is guaranteed to exist and we are in the main thread.
@@ -174,17 +190,21 @@ static FIRApp* CreatePlatformApp(const AppOptions& options, const char* name) {
         }
       };
       if ([NSThread isMainThread]) {
+        LogError("DEDB CreatePlatformApp calling closure on main thread");
         closure();
       } else {
+        LogError("DEDB CreatePlatformApp calling closure with dispatch async");
         dispatch_sync(dispatch_get_main_queue(), closure);
       }
     }
   }
+  LogError("DEDB CreatePlatformApp return platform_app: %p", platform_app);
   return platform_app;
 }
 
 // Create or get a iOS SDK FIRApp instance.
 static FIRApp* CreateOrGetPlatformApp(const AppOptions& options, const char* name) {
+  LogError("DEDB CreateOrGetPlatformApp");
   FIRApp* platform_app = GetPlatformAppByName(name);
   if (platform_app) {
     // If a FIRApp exists, make sure it has the requested options.
@@ -240,13 +260,18 @@ App::~App() {
 }
 
 App* App::Create() {
+  LogError("DEDB App::Create()");
   AppOptions options;
   return AppOptions::LoadDefault(&options) ? Create(options) : nullptr;
 }
 
-App* App::Create(const AppOptions& options) { return Create(options, kDefaultAppName); }
+App* App::Create(const AppOptions& options) {
+  LogError("DEDB App::Create(options)");
+  return Create(options, kDefaultAppName);
+}
 
 App* App::Create(const AppOptions& options, const char* name) {
+  LogError("DEDB App::Create(options, name)");
   App* app = GetInstance(name);
   if (app) {
     LogError("App %s already created, options will not be applied.", name);
