@@ -177,6 +177,9 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFIREBASE_GITHUB_ACTION_BUILD=0")
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+
 # Set directories needed by the Firebase subprojects
 # Directory to store generated files.
 set(FIREBASE_GEN_FILE_DIR ${CMAKE_BINARY_DIR}/generated)

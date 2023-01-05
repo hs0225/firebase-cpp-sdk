@@ -339,7 +339,7 @@ else()
   set(app_flatbuffers_lib flatbuffers)
 endif()
 
-add_library(firebase_app STATIC
+add_library(firebase_app SHARED
     ${log_SRCS}
     ${log_HDRS}
     ${common_SRCS}
@@ -355,6 +355,21 @@ add_library(firebase_app STATIC
     memory/unique_ptr.h
     memory/shared_ptr.h
     ${app_flatbuffers_srcs})
+
+install (
+  TARGETS firebase_app 
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/firebase
+  PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+              GROUP_EXECUTE GROUP_WRITE GROUP_READ WORLD_READ
+)
+install(
+  DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src/include
+  DESTINATION ${CMAKE_INSTALL_PREFIX}
+  USE_SOURCE_PERMISSIONS
+)
+
+target_compile_options(firebase_app
+  PUBLIC "-fPIC")
 
 set_property(TARGET firebase_app PROPERTY FOLDER "Firebase Cpp")
 

@@ -82,9 +82,24 @@ else()
       -DFIREBASE_TARGET_DESKTOP=1)
 endif()
 
-add_library(firebase_storage STATIC
+add_library(firebase_storage SHARED
     ${common_SRCS}
     ${storage_platform_SRCS})
+
+install(
+  TARGETS firebase_storage 
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/firebase
+  PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+              GROUP_EXECUTE GROUP_WRITE GROUP_READ WORLD_READ
+)
+install(
+  DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src/include
+  DESTINATION ${CMAKE_INSTALL_PREFIX}
+  USE_SOURCE_PERMISSIONS
+)
+
+target_compile_options(firebase_storage
+  PUBLIC "-fPIC")
 
 set_property(TARGET firebase_storage PROPERTY FOLDER "Firebase Cpp")
 
