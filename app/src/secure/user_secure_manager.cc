@@ -34,6 +34,11 @@
 #include "app/src/secure/user_secure_darwin_internal.h"
 #define USER_SECURE_TYPE UserSecureDarwinInternal
 
+#elif defined(TARGET_OS_TIZEN)
+#warning "No secure storage is available on this platform."
+#include "app/src/secure/user_secure_fake_internal.h"
+#define USER_SECURE_TYPE UserSecureFakeInternal
+
 #elif defined(__linux__)
 #include "app/src/secure/user_secure_linux_internal.h"
 #define USER_SECURE_TYPE UserSecureLinuxInternal

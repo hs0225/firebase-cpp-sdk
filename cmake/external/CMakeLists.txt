@@ -22,12 +22,22 @@ project(Firebase-cpp-download C CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
-include(flatbuffers)
-include(firestore)
-
+if (NOT ${FIREBASE_EXTERNAL_PLATFORM} STREQUAL "TIZEN")
+  include(flatbuffers)
+  include(firestore)
+endif()
 
 # Some of the external dependencies are not needed for mobile.
-if (${FIREBASE_EXTERNAL_PLATFORM} STREQUAL "DESKTOP")
+if (${FIREBASE_EXTERNAL_PLATFORM} STREQUAL "TIZEN")
+  include(tizen/flatbuffers)
+  include(tizen/firestore)
+  include(tizen/boringssl)
+  include(tizen/curl)
+  include(tizen/libuv)
+  include(tizen/leveldb)
+  include(tizen/uWebSockets)
+  include(tizen/zlib)
+elseif (${FIREBASE_EXTERNAL_PLATFORM} STREQUAL "DESKTOP")
   include(boringssl)
   include(curl)
   include(libuv)

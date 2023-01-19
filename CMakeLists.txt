@@ -177,6 +177,10 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFIREBASE_GITHUB_ACTION_BUILD=0")
 endif()
 
+if(TARGET_OS_TIZEN)
+  add_definitions(-DTARGET_OS_TIZEN=1)
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 
@@ -335,6 +339,17 @@ if(DESKTOP)
     #
     # If the find_package fails to find OpenSSL, set OPENSSL_ROOT_DIR to OpenSSL'S install
     # location on your system.
+    if(TARGET_OS_TIZEN)
+      set(OPENSSL_SSL_LIBRARY /usr/lib/libssl.so CACHE FILEPATH "" FORCE)
+      set(OPENSSL_CRYPTO_LIBRARY /usr/lib/libcrypto.so CACHE FILEPATH "" FORCE)
+    
+      set(OPENSSL_INCLUDE_DIR /usr/include CACHE PATH "" FORCE)
+      set(OPENSSL_CRYPTO_LIBRARIES ${OPENSSL_CRYPTO_LIBRARY})
+      set(OPENSSL_SSL_LIBRARIES ${OPENSSL_SSL_LIBRARY})
+      set(OPENSSL_LIBRARIES ${OPENSSL_SSL_LIBRARIES} ${OPENSSL_CRYPTO_LIBRARIES})
+      set(OPENSSL_VERSION '1.1.0' CACHE STRING "" FORCE)
+    endif()
+
     find_package(OpenSSL REQUIRED)
   endif()
 endif()
