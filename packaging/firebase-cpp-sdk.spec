@@ -6,7 +6,8 @@ Source: %{name}-%{version}.tar.gz
 License: N/A 
  
 BuildRequires: cmake, make, ninja, python3
-BuildRequires: libopenssl1.1-devel
+BuildRequires: libopenssl1.1-devel, libcurl-devel, curl-devel
+BuildRequires: pkgconfig(zlib), pkgconfig(libcurl)
 # BuildRequires: libgcrypt-devel, gobject-introspection-devel
 BuildRequires: pkgconfig(openssl1.1)
 # BuildRequires: pkgconfig(glib-2.0)
@@ -35,7 +36,9 @@ export PATH="$HOME/.local/bin:$PATH"
 rm -rf %{out_dir}
 mkdir -p %{out_dir}
 cmake -B%{out_dir} -H. -G Ninja \
-  -DCMAKE_INSTALL_PREFIX=$RPM_BUILD_ROOT/%{_exec_prefix} -DFIREBASE_INCLUDE_FIRESTORE=OFF \
+  -DCMAKE_INSTALL_PREFIX=$RPM_BUILD_ROOT/%{_exec_prefix} \
+  -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/tizen.cmake \
+  -DFIREBASE_INCLUDE_FIRESTORE=OFF \
   -DTARGET_OS_TIZEN=ON
 ninja -C %{out_dir} firebase_app
 
