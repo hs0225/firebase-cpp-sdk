@@ -213,7 +213,11 @@ elseif(IOS)
 elseif(TARGET_OS_TIZEN)
   # TODO: support secure storage
   set(app_platform_SRCS
+    ${app_desktop_SRCS}
     src/secure/user_secure_fake_internal.cc
+    src/filesystem_desktop_linux.cc
+    src/locale.cc
+    src/uuid.cc
   )
 else()
   if(MSVC)
